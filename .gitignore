@@ -1,0 +1,20 @@
+node_modules/
+dist/
+coverage/
+.turbo/
+.cache/
+.tmp/
+tmp/
+*.log
+.DS_Store
+
+# Test runners
+.vitest/
+
+# TypeScript incremental state
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
