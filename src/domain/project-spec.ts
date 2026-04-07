@@ -1,20 +1,21 @@
 import { ensureKebabCase, getInstanceType, getSurfacePrefix, toConstantCase, toPascalCase } from "./naming";
 import type {
-  BuildEntry,
-  DependencyImport,
-  GenerationOptions,
-  ProjectBlueprint,
-  ProjectDependencies,
-  ProjectExports,
-  ProjectNames,
+  IBuildEntry,
+  IDependencyImport,
+  IGenerationOptions,
+  IProjectBlueprint,
+  IProjectDependencies,
+  IProjectExports,
+  IProjectMetadata,
+  IProjectNames,
   PublishExport,
-  ProjectScripts,
-  ProjectSpec,
-  PublishExportTarget,
+  IPublishExportTarget,
+  IProjectScripts,
+  IProjectSpec,
   Surface,
 } from "./types";
 
-const BASE_LOGIC_DEPENDENCY: Record<Exclude<Surface, "universal">, DependencyImport> = {
+const BASE_LOGIC_DEPENDENCY: Record<Exclude<Surface, "universal">, IDependencyImport> = {
   sheets: {
     packageName: "@univerjs/sheets",
     pluginSymbol: "UniverSheetsPlugin",
@@ -29,7 +30,7 @@ const BASE_LOGIC_DEPENDENCY: Record<Exclude<Surface, "universal">, DependencyImp
   },
 };
 
-const BASE_UI_DEPENDENCY: Record<Surface, DependencyImport> = {
+const BASE_UI_DEPENDENCY: Record<Surface, IDependencyImport> = {
   sheets: {
     packageName: "@univerjs/sheets-ui",
     pluginSymbol: "UniverSheetsUIPlugin",
@@ -47,6 +48,10 @@ const BASE_UI_DEPENDENCY: Record<Surface, DependencyImport> = {
     pluginSymbol: "UniverUIPlugin",
   },
 };
+
+const COMMUNITY_HOMEPAGE = "https://github.com/univer-community";
+const COMMUNITY_AUTHOR = "Anonymous";
+const COMMUNITY_LICENSE = "MIT";
 
 function normalizePackageName(packageName: string): string {
   const trimmed = packageName.trim();
@@ -80,7 +85,36 @@ function getSemverRange(version: string): string {
   return `^${version}`;
 }
 
-export function deriveProjectBlueprint(input: GenerationOptions): ProjectBlueprint {
+function toTitleWords(value: string): string {
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
+}
+
+function createDescription(input: IGenerationOptions): string {
+  const title = toTitleWords(input.pluginSlug);
+
+  if (input.surface === "universal") {
+    return `A Univer plugin for ${title}.`;
+  }
+
+  return `A Univer ${toTitleWords(input.surface)} plugin for ${title}.`;
+}
+
+function createKeywords(input: IGenerationOptions): string[] {
+  return Array.from(
+    new Set([
+      "univer",
+      "plugin",
+      ...(input.surface === "universal" ? [] : [input.surface]),
+      ...input.pluginSlug.split("-").filter(Boolean),
+    ]),
+  );
+}
+
+export function deriveProjectBlueprint(input: IGenerationOptions): IProjectBlueprint {
   return {
     packageName: normalizePackageName(input.packageName),
     packageDirectoryName: getPackageDirectoryName(input.packageName),
@@ -96,7 +130,7 @@ export function deriveProjectBlueprint(input: GenerationOptions): ProjectBluepri
   };
 }
 
-function deriveProjectNamesInternal(input: GenerationOptions): ProjectNames {
+function deriveProjectNamesInternal(input: IGenerationOptions): IProjectNames {
   const featurePascal = toPascalCase(input.pluginSlug);
   const featureConstant = toConstantCase(input.pluginSlug);
   const surfacePrefix = getSurfacePrefix(input.surface);
@@ -120,8 +154,8 @@ function deriveProjectNamesInternal(input: GenerationOptions): ProjectNames {
   };
 }
 
-function deriveBuildEntries(blueprint: ProjectBlueprint): BuildEntry[] {
-  const entries: BuildEntry[] = [
+function deriveBuildEntries(blueprint: IProjectBlueprint): IBuildEntry[] {
+  const entries: IBuildEntry[] = [
     { key: "index", sourcePath: "src/index.ts" },
     { key: "plugin", sourcePath: "src/plugin.ts" },
   ];
@@ -145,7 +179,7 @@ function deriveBuildEntries(blueprint: ProjectBlueprint): BuildEntry[] {
   return entries;
 }
 
-function deriveDependencies(input: GenerationOptions, blueprint: ProjectBlueprint): ProjectDependencies {
+function deriveDependencies(input: IGenerationOptions, blueprint: IProjectBlueprint): IProjectDependencies {
   const runtime: Record<string, string> = {
     "@univerjs/core": getSemverRange(input.univerVersion),
     rxjs: "^7.8.2",
@@ -220,10 +254,20 @@ function deriveDependencies(input: GenerationOptions, blueprint: ProjectBlueprin
   return { runtime, peer, dev };
 }
 
-function deriveScripts(blueprint: ProjectBlueprint): ProjectScripts {
+function deriveMetadata(input: IGenerationOptions): IProjectMetadata {
+  return {
+    author: COMMUNITY_AUTHOR,
+    description: createDescription(input),
+    homepage: COMMUNITY_HOMEPAGE,
+    keywords: createKeywords(input),
+    license: COMMUNITY_LICENSE,
+  };
+}
+
+function deriveScripts(blueprint: IProjectBlueprint): IProjectScripts {
   return {
     build: "pnpm run build:bundle && pnpm run build:types",
-    buildBundle: "node --import tsx/esm ./scripts/build.ts build --cleanup",
+    buildBundle: "node ./scripts/build.mjs build --cleanup",
     buildTypes: "tsc -p tsconfig.node.json",
     buildDemo: blueprint.includeDemo ? "vite build --config vite.demo.config.ts" : undefined,
     coverage: "vitest run --coverage",
@@ -238,7 +282,7 @@ function deriveScripts(blueprint: ProjectBlueprint): ProjectScripts {
   };
 }
 
-function createPublishTarget(key: string): PublishExportTarget {
+function createPublishTarget(key: string): IPublishExportTarget {
   if (key === "facade") {
     return {
       import: "./lib/es/facade.js",
@@ -262,7 +306,7 @@ function createPublishTarget(key: string): PublishExportTarget {
   };
 }
 
-function deriveExports(blueprint: ProjectBlueprint): ProjectExports {
+function deriveExports(blueprint: IProjectBlueprint): IProjectExports {
   const source: Record<string, string> = {
     ".": "./src/index.ts",
     "./*": "./src/*",
@@ -307,8 +351,8 @@ function deriveExports(blueprint: ProjectBlueprint): ProjectExports {
   return { source, publish };
 }
 
-export function deriveProjectSpec(input: GenerationOptions): ProjectSpec {
-  const normalizedInput: GenerationOptions = {
+export function deriveProjectSpec(input: IGenerationOptions): IProjectSpec {
+  const normalizedInput: IGenerationOptions = {
     ...input,
     pluginSlug: ensureKebabCase(input.pluginSlug),
     packageName: normalizePackageName(input.packageName),
@@ -319,6 +363,7 @@ export function deriveProjectSpec(input: GenerationOptions): ProjectSpec {
     input: normalizedInput,
     blueprint,
     names: deriveProjectNamesInternal(normalizedInput),
+    metadata: deriveMetadata(normalizedInput),
     buildEntries: deriveBuildEntries(blueprint),
     dependencies: deriveDependencies(normalizedInput, blueprint),
     scripts: deriveScripts(blueprint),
@@ -326,7 +371,7 @@ export function deriveProjectSpec(input: GenerationOptions): ProjectSpec {
   };
 }
 
-export function deriveProjectNames(input: GenerationOptions) {
+export function deriveProjectNames(input: IGenerationOptions) {
   const spec = deriveProjectSpec(input);
 
   return {

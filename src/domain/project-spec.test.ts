@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { ensureKebabCase, toConstantCase, toPascalCase } from "./naming";
 import { deriveProjectBlueprint, deriveProjectNames, deriveProjectSpec } from "./project-spec";
-import type { GenerationOptions } from "./types";
+import type { IGenerationOptions } from "./types";
 
-const baseOptions: GenerationOptions = {
+const baseOptions: IGenerationOptions = {
   targetDir: "./tmp",
   pluginSlug: "smart-filter",
   packageName: "@univerjs/univer-smart-filter-plugin",
@@ -50,5 +50,10 @@ describe("project spec", () => {
       "@univerjs/sheets": "^0.19.0",
       "@univerjs/sheets-ui": "^0.19.0",
     });
+    expect(spec.metadata.description).toBe("A Univer Sheets plugin for Smart Filter.");
+    expect(spec.metadata.homepage).toBe("https://github.com/univer-community");
+    expect(spec.metadata.author).toBe("Anonymous");
+    expect(spec.metadata.license).toBe("MIT");
+    expect(spec.metadata.keywords).toEqual(["univer", "plugin", "sheets", "smart", "filter"]);
   });
 });

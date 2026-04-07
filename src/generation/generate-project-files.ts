@@ -1,12 +1,12 @@
 import { deriveProjectSpec } from "../domain/project-spec";
-import type { GeneratedFile, GenerationOptions, ProjectSpec } from "../domain/types";
+import type { IGeneratedFile, IGenerationOptions, IProjectSpec } from "../domain/types";
 import { createPackageManifest } from "./package-manifest";
 import { createRenderContext } from "./render-context";
 import { renderTemplate } from "./render-template";
 import { loadTemplate } from "./template-loader";
 import { createTemplatePlan } from "./template-plan";
 
-export function renderProjectFiles(spec: ProjectSpec): GeneratedFile[] {
+export function renderProjectFiles(spec: IProjectSpec): IGeneratedFile[] {
   const context = createRenderContext(spec);
   const files = createTemplatePlan(spec).map((descriptor) => ({
     path: descriptor.outputPath,
@@ -22,6 +22,6 @@ export function renderProjectFiles(spec: ProjectSpec): GeneratedFile[] {
   ];
 }
 
-export function generateProjectFiles(input: GenerationOptions): GeneratedFile[] {
+export function generateProjectFiles(input: IGenerationOptions): IGeneratedFile[] {
   return renderProjectFiles(deriveProjectSpec(input));
 }

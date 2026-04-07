@@ -1,10 +1,10 @@
-import type { Choice, Shape, Surface } from "./types";
+import type { IChoice, Shape, Surface } from "./types";
 
 export const DEFAULT_UNIVER_VERSION = "0.20.0";
 export const DEFAULT_PROJECT_VERSION = "0.1.0";
-export const DEFAULT_PACKAGE_NAME = "@univerjs/univer-sample-plugin";
+export const DEFAULT_PACKAGE_NAME = "@univer-community/sample-plugin";
 
-export const SURFACE_CHOICES: Choice<Surface>[] = [
+export const SURFACE_CHOICES: IChoice<Surface>[] = [
   {
     label: "Sheets",
     value: "sheets",
@@ -27,7 +27,7 @@ export const SURFACE_CHOICES: Choice<Surface>[] = [
   },
 ];
 
-export const SHAPE_CHOICES: Choice<Shape>[] = [
+export const SHAPE_CHOICES: IChoice<Shape>[] = [
   {
     label: "logic-only",
     value: "logic-only",

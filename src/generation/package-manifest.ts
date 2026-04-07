@@ -1,12 +1,16 @@
-import type { ProjectSpec } from "../domain/types";
+import type { IProjectSpec } from "../domain/types";
 import { sortObject, stringifyJson } from "./utils";
 
-export function createPackageManifest(spec: ProjectSpec): string {
+export function createPackageManifest(spec: IProjectSpec): string {
   return stringifyJson({
     name: spec.blueprint.packageName,
     version: spec.input.projectVersion,
+    description: spec.metadata.description,
+    keywords: spec.metadata.keywords,
+    homepage: spec.metadata.homepage,
+    license: spec.metadata.license,
+    author: spec.metadata.author,
     type: "module",
-    license: "MIT",
     main: "./src/index.ts",
     types: "./lib/types/index.d.ts",
     exports: spec.exports.source,

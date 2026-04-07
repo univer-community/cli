@@ -1,21 +1,23 @@
-import type { ProjectSpec } from "../domain/types";
+import type { IProjectSpec } from "../domain/types";
 
 export interface TemplateDescriptor {
   outputPath: string;
   templatePath: string;
 }
 
-export function createTemplatePlan(spec: ProjectSpec): TemplateDescriptor[] {
+export function createTemplatePlan(spec: IProjectSpec): TemplateDescriptor[] {
   const descriptors: TemplateDescriptor[] = [
     { outputPath: ".editorconfig", templatePath: "root/.editorconfig.tpl" },
     { outputPath: ".gitignore", templatePath: "root/.gitignore.tpl" },
+    { outputPath: ".npmignore", templatePath: "root/.npmignore.tpl" },
+    { outputPath: "LICENSE", templatePath: "root/LICENSE.tpl" },
     { outputPath: "oxfmt.config.ts", templatePath: "root/oxfmt.config.ts.tpl" },
     { outputPath: "oxlint.config.ts", templatePath: "root/oxlint.config.ts.tpl" },
     { outputPath: "README.md", templatePath: "root/README.md.tpl" },
     { outputPath: "tsconfig.json", templatePath: "root/tsconfig.json.tpl" },
     { outputPath: "tsconfig.node.json", templatePath: "root/tsconfig.node.json.tpl" },
     { outputPath: "vitest.config.ts", templatePath: "root/vitest.config.ts.tpl" },
-    { outputPath: "scripts/build.ts", templatePath: "root/scripts/build.ts.tpl" },
+    { outputPath: "scripts/build.mjs", templatePath: "root/scripts/build.mjs.tpl" },
     { outputPath: "src/globals.d.ts", templatePath: "root/src/globals.d.ts.tpl" },
     { outputPath: "src/index.ts", templatePath: "root/src/index.ts.tpl" },
     { outputPath: "src/plugin.ts", templatePath: "root/src/plugin.ts.tpl" },

@@ -14,11 +14,11 @@ export {
   toPascalCase,
 } from "./naming";
 export type {
-  GeneratedFile,
-  GenerationOptions,
-  ProjectBlueprint,
-  ProjectSpec,
+  IGeneratedFile,
+  IGenerationOptions,
+  IProjectBlueprint,
+  IProjectSpec,
   Shape,
   Surface,
-  WriteGeneratedFilesOptions,
+  IWriteGeneratedFilesOptions,
 } from "./types";

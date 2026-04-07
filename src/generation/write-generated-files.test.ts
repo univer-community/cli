@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import type { GeneratedFile } from "../domain/types";
+import type { IGeneratedFile } from "../domain/types";
 import { findExistingGeneratedFiles, writeGeneratedFiles } from "./write-generated-files";
 
 const tempDirs: string[] = [];
@@ -20,7 +20,7 @@ afterEach(async () => {
 describe("writeGeneratedFiles", () => {
   it("writes generated files into a new directory", async () => {
     const targetDir = await createTempDir();
-    const files: GeneratedFile[] = [
+    const files: IGeneratedFile[] = [
       { path: ".gitignore", content: "node_modules\n" },
       { path: "src/index.ts", content: "export const value = 1;\n" },
     ];
@@ -35,7 +35,7 @@ describe("writeGeneratedFiles", () => {
     const targetDir = await createTempDir();
     const filePath = path.join(targetDir, ".gitignore");
     await writeFile(filePath, "old\n", "utf8");
-    const files: GeneratedFile[] = [{ path: ".gitignore", content: "new\n" }];
+    const files: IGeneratedFile[] = [{ path: ".gitignore", content: "new\n" }];
 
     expect(findExistingGeneratedFiles(targetDir, files)).toEqual([filePath]);
     await expect(writeGeneratedFiles(targetDir, files)).rejects.toThrow(
@@ -50,7 +50,7 @@ describe("writeGeneratedFiles", () => {
     const staleFilePath = path.join(targetDir, "stale.txt");
     await writeFile(filePath, "old\n", "utf8");
     await writeFile(staleFilePath, "stale\n", "utf8");
-    const files: GeneratedFile[] = [
+    const files: IGeneratedFile[] = [
       { path: ".gitignore", content: "new\n" },
       { path: "src/index.ts", content: "export const value = 1;\n" },
     ];

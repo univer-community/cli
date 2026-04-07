@@ -4,7 +4,7 @@ export const SHAPES = ["logic-only", "logic-ui", "mobile-ui-addon", "worker-rpc-
 export type Surface = (typeof SURFACES)[number];
 export type Shape = (typeof SHAPES)[number];
 
-export interface GenerationOptions {
+export interface IGenerationOptions {
   targetDir: string;
   pluginSlug: string;
   packageName: string;
@@ -17,18 +17,18 @@ export interface GenerationOptions {
   includeDemo: boolean;
 }
 
-export interface Choice<T extends string> {
+export interface IChoice<T extends string> {
   label: string;
   value: T;
   hint?: string;
 }
 
-export interface DependencyImport {
+export interface IDependencyImport {
   packageName: string;
   pluginSymbol: string;
 }
 
-export interface ProjectBlueprint {
+export interface IProjectBlueprint {
   packageName: string;
   packageDirectoryName: string;
   includeUiPlugin: boolean;
@@ -37,24 +37,24 @@ export interface ProjectBlueprint {
   includeFacade: boolean;
   includeLocale: boolean;
   includeDemo: boolean;
-  baseLogicDependencyImport?: DependencyImport;
-  baseUiDependencyImport?: DependencyImport;
+  baseLogicDependencyImport?: IDependencyImport;
+  baseUiDependencyImport?: IDependencyImport;
 }
 
-export interface BuildEntry {
+export interface IBuildEntry {
   key: string;
   sourcePath: string;
 }
 
-export interface PublishExportTarget {
+export interface IPublishExportTarget {
   import: string;
   require: string;
   types: string;
 }
 
-export type PublishExport = PublishExportTarget | string;
+export type PublishExport = IPublishExportTarget | string;
 
-export interface ProjectNames {
+export interface IProjectNames {
   featurePascal: string;
   featureConstant: string;
   surfacePrefix: string;
@@ -72,13 +72,21 @@ export interface ProjectNames {
   workerChannelConstant: string;
 }
 
-export interface ProjectDependencies {
+export interface IProjectDependencies {
   runtime: Record<string, string>;
   peer: Record<string, string>;
   dev: Record<string, string>;
 }
 
-export interface ProjectScripts {
+export interface IProjectMetadata {
+  author: string;
+  description: string;
+  homepage: string;
+  keywords: string[];
+  license: string;
+}
+
+export interface IProjectScripts {
   build: string;
   buildBundle: string;
   buildTypes: string;
@@ -94,26 +102,27 @@ export interface ProjectScripts {
   typecheck: string;
 }
 
-export interface ProjectExports {
+export interface IProjectExports {
   source: Record<string, string>;
   publish: Record<string, PublishExport>;
 }
 
-export interface ProjectSpec {
-  input: GenerationOptions;
-  blueprint: ProjectBlueprint;
-  names: ProjectNames;
-  buildEntries: BuildEntry[];
-  dependencies: ProjectDependencies;
-  scripts: ProjectScripts;
-  exports: ProjectExports;
+export interface IProjectSpec {
+  input: IGenerationOptions;
+  blueprint: IProjectBlueprint;
+  names: IProjectNames;
+  metadata: IProjectMetadata;
+  buildEntries: IBuildEntry[];
+  dependencies: IProjectDependencies;
+  scripts: IProjectScripts;
+  exports: IProjectExports;
 }
 
-export interface GeneratedFile {
+export interface IGeneratedFile {
   path: string;
   content: string;
 }
 
-export interface WriteGeneratedFilesOptions {
+export interface IWriteGeneratedFilesOptions {
   overwrite?: boolean;
 }

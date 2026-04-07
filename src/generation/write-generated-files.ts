@@ -1,16 +1,16 @@
 import { existsSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import type { GeneratedFile, WriteGeneratedFilesOptions } from "../domain/types";
+import type { IGeneratedFile, IWriteGeneratedFilesOptions } from "../domain/types";
 
-export function findExistingGeneratedFiles(targetDir: string, files: GeneratedFile[]): string[] {
+export function findExistingGeneratedFiles(targetDir: string, files: IGeneratedFile[]): string[] {
   return files.map((file) => path.resolve(targetDir, file.path)).filter((absolutePath) => existsSync(absolutePath));
 }
 
 export async function writeGeneratedFiles(
   targetDir: string,
-  files: GeneratedFile[],
-  options: WriteGeneratedFilesOptions = {},
+  files: IGeneratedFile[],
+  options: IWriteGeneratedFilesOptions = {},
 ): Promise<void> {
   const existingFiles = findExistingGeneratedFiles(targetDir, files);
 

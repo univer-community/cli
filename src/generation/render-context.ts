@@ -1,5 +1,5 @@
 import { toPascalCase } from "../domain/naming";
-import type { ProjectSpec } from "../domain/types";
+import type { IProjectSpec } from "../domain/types";
 
 function createOptionalImportLine(symbol: string | undefined, packageName: string | undefined): string {
   return symbol && packageName ? `import { ${symbol} } from '${packageName}';\n` : "";
@@ -9,17 +9,17 @@ function createOptionalDependencyDecorator(symbol: string | undefined): string {
   return symbol ? `@DependentOn(${symbol})\n` : "";
 }
 
-function createUiDependentOn(spec: ProjectSpec): string {
+function createUiDependentOn(spec: IProjectSpec): string {
   const parts = [spec.blueprint.baseUiDependencyImport?.pluginSymbol, spec.names.logicClassName].filter(Boolean);
 
   return `@DependentOn(${parts.join(", ")})\n`;
 }
 
-function createBuildEntries(spec: ProjectSpec): string {
-  return spec.buildEntries.map((entry) => `    ['${entry.key}', '${entry.sourcePath}'],`).join("\n");
+function createBuildEntries(spec: IProjectSpec): string {
+  return spec.buildEntries.map((entry) => `    { key: "${entry.key}", path: "${entry.sourcePath}" },`).join("\n");
 }
 
-function createIndexLines(spec: ProjectSpec): string {
+function createIndexLines(spec: IProjectSpec): string {
   const lines = [
     `export type { ${spec.names.configName} } from './config/config';`,
     spec.blueprint.includeUiPlugin || spec.blueprint.includeMobileEntry
@@ -38,17 +38,158 @@ function createIndexLines(spec: ProjectSpec): string {
   return lines.join("\n");
 }
 
-function createReadmeCommands(spec: ProjectSpec): string {
-  const commands = ["pnpm install", "pnpm build", "pnpm lint", "pnpm test"];
-
-  if (spec.blueprint.includeDemo) {
-    commands.push("pnpm dev");
-  }
-
-  return commands.join("\n");
+function createPrimaryPluginClass(spec: IProjectSpec): string {
+  return spec.blueprint.includeUiPlugin ? spec.names.uiClassName : spec.names.logicClassName;
 }
 
-function createDemoImports(spec: ProjectSpec): string {
+function createReadmeHighlights(spec: IProjectSpec): string {
+  const highlights = [`- Exports \`${spec.names.logicClassName}\` as the core plugin entry`];
+
+  if (spec.blueprint.includeUiPlugin) {
+    highlights.push(`- Exports \`${spec.names.uiClassName}\` for browser UI integration`);
+  }
+  if (spec.blueprint.includeFacade) {
+    highlights.push(`- Includes a dedicated \`${spec.blueprint.packageName}/facade\` entry`);
+  }
+  if (spec.blueprint.includeLocale) {
+    highlights.push("- Includes locale entry output under `./locale/*`");
+  }
+  if (spec.blueprint.includeMobileEntry) {
+    highlights.push(`- Includes an additional mobile entry via \`${spec.names.mobileClassName}\``);
+  }
+  if (spec.blueprint.includeWorkerEntry) {
+    highlights.push(`- Includes a worker companion entry via \`${spec.names.workerClassName}\``);
+  }
+
+  return highlights.join("\n");
+}
+
+function createReadmeRegistrationHeading(spec: IProjectSpec): string {
+  return spec.blueprint.includeUiPlugin ? "Register the plugin" : "Register the logic plugin";
+}
+
+function createReadmeFacadeSection(spec: IProjectSpec): string {
+  if (!spec.blueprint.includeFacade) {
+    return "";
+  }
+
+  return [
+    "### Facade Entry",
+    "",
+    "Import the dedicated facade entry when you want to expose facade-specific helpers:",
+    "",
+    "```ts",
+    `import { ${spec.names.featurePascal}Facade } from "${spec.blueprint.packageName}/facade";`,
+    "```",
+    "",
+    "Use `src/facade/index.ts` to add the facade integrations that belong to your plugin.",
+  ].join("\n");
+}
+
+function createReadmeWorkerSection(spec: IProjectSpec): string {
+  if (!spec.blueprint.includeWorkerEntry) {
+    return "";
+  }
+
+  return [
+    "### Register the worker companion",
+    "",
+    "```ts",
+    `import { ${spec.names.workerClassName} } from "${spec.blueprint.packageName}/worker/plugin";`,
+    "",
+    `univer.registerPlugin(${spec.names.workerClassName});`,
+    "```",
+  ].join("\n");
+}
+
+function createReadmeDevelopmentExtra(spec: IProjectSpec): string {
+  if (!spec.blueprint.includeDemo) {
+    return "";
+  }
+
+  return [
+    "Build the demo:",
+    "",
+    "```bash",
+    "pnpm build:demo",
+    "```",
+    "",
+    "Start the demo:",
+    "",
+    "```bash",
+    "pnpm dev",
+    "```",
+  ].join("\n");
+}
+
+function createReadmeBuildOutput(spec: IProjectSpec): string {
+  const lines = ["- `lib/es`: ESM output", "- `lib/cjs`: CommonJS output"];
+
+  if (spec.blueprint.includeLocale) {
+    lines.push("- `lib/es/locale` and `lib/cjs/locale`: locale entry output");
+  }
+
+  lines.push("- `lib/types`: TypeScript declaration files");
+
+  return lines.join("\n");
+}
+
+function createReadmeApiNotes(spec: IProjectSpec): string {
+  const lines = [`- \`${spec.blueprint.packageName}\` exports the primary plugin entry`];
+
+  if (spec.blueprint.includeUiPlugin) {
+    lines.push(
+      `- \`${spec.names.uiClassName}\` depends on \`${spec.names.logicClassName}\` and wires the logic plugin automatically`,
+    );
+  }
+  if (spec.blueprint.includeFacade) {
+    lines.push(`- \`${spec.blueprint.packageName}/facade\` is reserved for plugin-specific facade helpers`);
+  }
+  if (spec.blueprint.includeLocale) {
+    lines.push("- `./locale/*` entries are emitted as standalone locale bundles");
+  }
+  if (spec.blueprint.includeMobileEntry) {
+    lines.push(`- \`${spec.names.mobileClassName}\` is available as an extra mobile-oriented entry`);
+  }
+  if (spec.blueprint.includeWorkerEntry) {
+    lines.push(`- \`${spec.blueprint.packageName}/worker/plugin\` exports the worker companion plugin`);
+  }
+
+  return lines.join("\n");
+}
+
+function createReadmeDemoSection(spec: IProjectSpec): string {
+  if (!spec.blueprint.includeDemo) {
+    return "";
+  }
+
+  const lines = [
+    "## Demo",
+    "",
+    "The `demo/` directory shows a complete integration flow:",
+    "",
+    "- Initialize a Univer instance with the required runtime plugins",
+    `- Register \`${createPrimaryPluginClass(spec)}\``,
+  ];
+
+  if (spec.blueprint.includeLocale) {
+    lines.push("- Load the generated locale bundle");
+  }
+  if (spec.blueprint.includeFacade) {
+    lines.push("- Extend or exercise the generated facade entry as needed");
+  }
+  if (spec.blueprint.includeMobileEntry) {
+    lines.push(`- Verify the optional mobile entry \`${spec.names.mobileClassName}\` when needed`);
+  } else if (spec.blueprint.includeUiPlugin) {
+    lines.push("- Verify the generated UI entry in the target runtime");
+  } else {
+    lines.push("- Exercise the generated logic plugin in a minimal unit");
+  }
+
+  return lines.join("\n");
+}
+
+function createDemoImports(spec: IProjectSpec): string {
   const pluginImportName = spec.blueprint.includeMobileEntry
     ? spec.names.mobileClassName
     : spec.blueprint.includeUiPlugin
@@ -111,7 +252,7 @@ function createDemoImports(spec: ProjectSpec): string {
   return lines.join("\n");
 }
 
-function createDemoRegistrations(spec: ProjectSpec): string {
+function createDemoRegistrations(spec: IProjectSpec): string {
   const generatedPluginClass = spec.blueprint.includeMobileEntry
     ? spec.names.mobileClassName
     : spec.blueprint.includeUiPlugin
@@ -152,7 +293,7 @@ function createDemoRegistrations(spec: ProjectSpec): string {
   return lines.join("\n");
 }
 
-function createDemoLocaleMergeExpression(spec: ProjectSpec): string {
+function createDemoLocaleMergeExpression(spec: IProjectSpec): string {
   const localeModules = [
     "DesignEnUS",
     "UIEnUS",
@@ -169,7 +310,7 @@ function createDemoLocaleMergeExpression(spec: ProjectSpec): string {
   return `mergeLocales(${localeModules.join(", ")})`;
 }
 
-function createDemoUnitLine(spec: ProjectSpec): string {
+function createDemoUnitLine(spec: IProjectSpec): string {
   if (spec.input.surface === "docs") {
     return "univer.createUnit(UniverInstanceType.UNIVER_DOC, {});";
   }
@@ -185,7 +326,7 @@ function createDemoUnitLine(spec: ProjectSpec): string {
   return "univer.createUnit(UniverInstanceType.UNIVER_SHEET, {});";
 }
 
-function createLocaleBody(spec: ProjectSpec): string {
+function createLocaleBody(spec: IProjectSpec): string {
   const lines = [
     `  '${spec.names.logicPluginConstant}': {`,
     `    title: '${toPascalCase(spec.input.pluginSlug)}',`,
@@ -203,7 +344,7 @@ function createLocaleBody(spec: ProjectSpec): string {
   return lines.join("\n");
 }
 
-export function createRenderContext(spec: ProjectSpec): Record<string, string> {
+export function createRenderContext(spec: IProjectSpec): Record<string, string> {
   return {
     BUILD_ENTRIES: createBuildEntries(spec),
     CONFIG_INTERFACE: spec.names.configName,
@@ -214,7 +355,7 @@ export function createRenderContext(spec: ProjectSpec): Record<string, string> {
     FACADE_CLASS: `${spec.names.featurePascal}Facade`,
     FEATURE_PASCAL: spec.names.featurePascal,
     FEATURE_SLUG: spec.input.pluginSlug,
-    FEATURE_TITLE: toPascalCase(spec.input.pluginSlug),
+    FEATURE_TITLE: spec.names.featurePascal,
     INDEX_EXPORT_LINES: createIndexLines(spec),
     INSTANCE_TYPE: spec.names.instanceType,
     LOGIC_CLASS: spec.names.logicClassName,
@@ -230,11 +371,17 @@ export function createRenderContext(spec: ProjectSpec): Record<string, string> {
     LOCALE_BODY: createLocaleBody(spec),
     MOBILE_CLASS: spec.names.mobileClassName,
     MOBILE_PLUGIN_CONSTANT: spec.names.mobilePluginConstant,
+    PACKAGE_DESCRIPTION: spec.metadata.description,
     PACKAGE_NAME: spec.blueprint.packageName,
-    README_COMMANDS: createReadmeCommands(spec),
-    README_SHAPE: spec.input.shape,
-    README_SURFACE: spec.input.surface,
-    README_VERSION: spec.input.univerVersion,
+    README_API_NOTES: createReadmeApiNotes(spec),
+    README_BUILD_OUTPUT: createReadmeBuildOutput(spec),
+    README_DEMO_SECTION: createReadmeDemoSection(spec),
+    README_DEVELOPMENT_EXTRA: createReadmeDevelopmentExtra(spec),
+    README_FACADE_SECTION: createReadmeFacadeSection(spec),
+    README_HIGHLIGHTS: createReadmeHighlights(spec),
+    README_REGISTRATION_HEADING: createReadmeRegistrationHeading(spec),
+    README_USAGE_PLUGIN_CLASS: createPrimaryPluginClass(spec),
+    README_WORKER_SECTION: createReadmeWorkerSection(spec),
     SERVICE_CLASS: `${spec.names.featurePascal}Service`,
     TEST_PLUGIN_CLASS: spec.names.logicClassName,
     TEST_PLUGIN_CONSTANT: spec.names.logicPluginConstant,

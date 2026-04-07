@@ -9,7 +9,7 @@ import {
   SURFACE_CHOICES,
 } from "../constants";
 import { ensureKebabCase } from "../domain/naming";
-import type { Choice, GenerationOptions } from "../domain/types";
+import type { IChoice, IGenerationOptions } from "../domain/types";
 
 export interface PromptSession {
   question(prompt: string): Promise<string>;
@@ -62,7 +62,7 @@ async function askConfirm(rl: PromptSession, message: string, defaultValue: bool
   }
 }
 
-async function askChoice<T extends string>(rl: PromptSession, message: string, choices: Choice<T>[]): Promise<T> {
+async function askChoice<T extends string>(rl: PromptSession, message: string, choices: IChoice<T>[]): Promise<T> {
   process.stdout.write(`${message}\n`);
   choices.forEach((choice, index) => {
     const hint = choice.hint ? ` - ${choice.hint}` : "";
@@ -103,7 +103,7 @@ function validatePackageName(value: string): string | null {
 export async function collectGenerationOptions(
   initialTargetDir?: string,
   promptSession?: PromptSession,
-): Promise<GenerationOptions> {
+): Promise<IGenerationOptions> {
   const rl = promptSession ?? createPromptSession();
   const ownsSession = !promptSession;
 

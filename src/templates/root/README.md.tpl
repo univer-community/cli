@@ -1,40 +1,73 @@
 # {{PACKAGE_NAME}}
 
-Generated with `create-univer-plugin`.
+{{PACKAGE_DESCRIPTION}}
 
-- Surface: `{{README_SURFACE}}`
-- Shape: `{{README_SHAPE}}`
-- Version target: `{{README_VERSION}}`
+{{README_HIGHLIGHTS}}
+
+## Installation
+
+```bash
+pnpm add {{PACKAGE_NAME}}
+```
 
 ## Usage
 
-Install dependencies and run the checks:
+### {{README_REGISTRATION_HEADING}}
+
+```ts
+import { {{README_USAGE_PLUGIN_CLASS}} } from "{{PACKAGE_NAME}}";
+
+univer.registerPlugin({{README_USAGE_PLUGIN_CLASS}});
+```
+
+{{README_FACADE_SECTION}}{{README_WORKER_SECTION}}
+
+## API Notes
+
+{{README_API_NOTES}}
+
+## Local Development
+
+Install dependencies:
 
 ```bash
 pnpm install
+```
+
+Run lint:
+
+```bash
 pnpm lint
+```
+
+Run tests:
+
+```bash
 pnpm test
+```
+
+Run type checking:
+
+```bash
+pnpm typecheck
+```
+
+Build the library:
+
+```bash
 pnpm build
 ```
 
-Start the demo locally when this project includes one:
+{{README_DEVELOPMENT_EXTRA}}
 
-```bash
-pnpm dev
-```
+## Build Output
 
-## Development
+Running `pnpm build` generates:
 
-Project layout:
+{{README_BUILD_OUTPUT}}
 
-- `src/`: plugin source
-- `src/plugin.ts`: logic plugin entry
-- `src/ui-plugin.ts`: UI plugin entry when the selected shape includes UI
-- `src/mobile-plugin.ts`: mobile UI entry when the selected shape includes mobile support
-- `src/locale/`: plugin locale bundles when locale output is enabled
-- `demo/`: minimal local demo for manual verification
-- `scripts/build.ts`: bundle build entry
+{{README_DEMO_SECTION}}
 
-```bash
-{{README_COMMANDS}}
-```
+## License
+
+MIT
