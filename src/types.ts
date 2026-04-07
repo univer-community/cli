@@ -15,6 +15,6 @@ export type {
   Shape,
   Surface,
   WriteGeneratedFilesOptions,
-} from './domain/types';
+} from "./domain/types";
 
-export { SHAPES, SURFACES } from './domain/types';
+export { SHAPES, SURFACES } from "./domain/types";

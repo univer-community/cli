@@ -1,4 +1,4 @@
-import { ensureKebabCase, getInstanceType, getSurfacePrefix, toConstantCase, toPascalCase } from './naming';
+import { ensureKebabCase, getInstanceType, getSurfacePrefix, toConstantCase, toPascalCase } from "./naming";
 import type {
   BuildEntry,
   DependencyImport,
@@ -12,46 +12,46 @@ import type {
   ProjectSpec,
   PublishExportTarget,
   Surface,
-} from './types';
+} from "./types";
 
-const BASE_LOGIC_DEPENDENCY: Record<Exclude<Surface, 'universal'>, DependencyImport> = {
+const BASE_LOGIC_DEPENDENCY: Record<Exclude<Surface, "universal">, DependencyImport> = {
   sheets: {
-    packageName: '@univerjs/sheets',
-    pluginSymbol: 'UniverSheetsPlugin',
+    packageName: "@univerjs/sheets",
+    pluginSymbol: "UniverSheetsPlugin",
   },
   docs: {
-    packageName: '@univerjs/docs',
-    pluginSymbol: 'UniverDocsPlugin',
+    packageName: "@univerjs/docs",
+    pluginSymbol: "UniverDocsPlugin",
   },
   slides: {
-    packageName: '@univerjs/slides',
-    pluginSymbol: 'UniverSlidesPlugin',
+    packageName: "@univerjs/slides",
+    pluginSymbol: "UniverSlidesPlugin",
   },
 };
 
 const BASE_UI_DEPENDENCY: Record<Surface, DependencyImport> = {
   sheets: {
-    packageName: '@univerjs/sheets-ui',
-    pluginSymbol: 'UniverSheetsUIPlugin',
+    packageName: "@univerjs/sheets-ui",
+    pluginSymbol: "UniverSheetsUIPlugin",
   },
   docs: {
-    packageName: '@univerjs/docs-ui',
-    pluginSymbol: 'UniverDocsUIPlugin',
+    packageName: "@univerjs/docs-ui",
+    pluginSymbol: "UniverDocsUIPlugin",
   },
   slides: {
-    packageName: '@univerjs/slides-ui',
-    pluginSymbol: 'UniverSlidesUIPlugin',
+    packageName: "@univerjs/slides-ui",
+    pluginSymbol: "UniverSlidesUIPlugin",
   },
   universal: {
-    packageName: '@univerjs/ui',
-    pluginSymbol: 'UniverUIPlugin',
+    packageName: "@univerjs/ui",
+    pluginSymbol: "UniverUIPlugin",
   },
 };
 
 function normalizePackageName(packageName: string): string {
   const trimmed = packageName.trim();
   if (!trimmed) {
-    throw new Error('Package name cannot be empty.');
+    throw new Error("Package name cannot be empty.");
   }
 
   return trimmed;
@@ -59,16 +59,17 @@ function normalizePackageName(packageName: string): string {
 
 function getPackageDirectoryName(packageName: string): string {
   const normalized = normalizePackageName(packageName);
-  const slashIndex = normalized.lastIndexOf('/');
+  const slashIndex = normalized.lastIndexOf("/");
   return slashIndex === -1 ? normalized : normalized.slice(slashIndex + 1);
 }
 
 function createPluginConstant(surface: Surface, pluginSlug: string, suffix: string): string {
-  const base = surface === 'universal'
-    ? `${toConstantCase(pluginSlug)}${suffix}`
-    : `${toConstantCase(surface)}_${toConstantCase(pluginSlug)}${suffix}`;
+  const base =
+    surface === "universal"
+      ? `${toConstantCase(pluginSlug)}${suffix}`
+      : `${toConstantCase(surface)}_${toConstantCase(pluginSlug)}${suffix}`;
 
-  return base.replace(/__+/g, '_');
+  return base.replace(/__+/g, "_");
 }
 
 function createClassName(surface: Surface, pluginSlug: string, suffix: string): string {
@@ -83,16 +84,15 @@ export function deriveProjectBlueprint(input: GenerationOptions): ProjectBluepri
   return {
     packageName: normalizePackageName(input.packageName),
     packageDirectoryName: getPackageDirectoryName(input.packageName),
-    includeUiPlugin: input.shape === 'logic-ui' || input.shape === 'mobile-ui-addon',
-    includeMobileEntry: input.shape === 'mobile-ui-addon',
-    includeWorkerEntry: input.shape === 'worker-rpc-companion',
+    includeUiPlugin: input.shape === "logic-ui" || input.shape === "mobile-ui-addon",
+    includeMobileEntry: input.shape === "mobile-ui-addon",
+    includeWorkerEntry: input.shape === "worker-rpc-companion",
     includeFacade: input.includeFacade,
     includeLocale: input.includeLocale,
     includeDemo: input.includeDemo,
-    baseLogicDependencyImport: input.surface === 'universal' ? undefined : BASE_LOGIC_DEPENDENCY[input.surface],
-    baseUiDependencyImport: input.shape === 'logic-ui' || input.shape === 'mobile-ui-addon'
-      ? BASE_UI_DEPENDENCY[input.surface]
-      : undefined,
+    baseLogicDependencyImport: input.surface === "universal" ? undefined : BASE_LOGIC_DEPENDENCY[input.surface],
+    baseUiDependencyImport:
+      input.shape === "logic-ui" || input.shape === "mobile-ui-addon" ? BASE_UI_DEPENDENCY[input.surface] : undefined,
   };
 }
 
@@ -106,40 +106,40 @@ function deriveProjectNamesInternal(input: GenerationOptions): ProjectNames {
     featureConstant,
     surfacePrefix,
     instanceType: getInstanceType(input.surface),
-    logicClassName: createClassName(input.surface, input.pluginSlug, 'Plugin'),
-    uiClassName: createClassName(input.surface, input.pluginSlug, 'UIPlugin'),
-    mobileClassName: createClassName(input.surface, input.pluginSlug, 'MobileUIPlugin'),
-    workerClassName: createClassName(input.surface, input.pluginSlug, 'WorkerPlugin'),
-    logicPluginConstant: createPluginConstant(input.surface, input.pluginSlug, '_PLUGIN'),
-    uiPluginConstant: createPluginConstant(input.surface, input.pluginSlug, '_UI_PLUGIN'),
-    mobilePluginConstant: createPluginConstant(input.surface, input.pluginSlug, '_MOBILE_UI_PLUGIN'),
-    workerPluginConstant: createPluginConstant(input.surface, input.pluginSlug, '_WORKER_PLUGIN'),
+    logicClassName: createClassName(input.surface, input.pluginSlug, "Plugin"),
+    uiClassName: createClassName(input.surface, input.pluginSlug, "UIPlugin"),
+    mobileClassName: createClassName(input.surface, input.pluginSlug, "MobileUIPlugin"),
+    workerClassName: createClassName(input.surface, input.pluginSlug, "WorkerPlugin"),
+    logicPluginConstant: createPluginConstant(input.surface, input.pluginSlug, "_PLUGIN"),
+    uiPluginConstant: createPluginConstant(input.surface, input.pluginSlug, "_UI_PLUGIN"),
+    mobilePluginConstant: createPluginConstant(input.surface, input.pluginSlug, "_MOBILE_UI_PLUGIN"),
+    workerPluginConstant: createPluginConstant(input.surface, input.pluginSlug, "_WORKER_PLUGIN"),
     configName: `IUniver${surfacePrefix}${featurePascal}Config`,
     uiConfigName: `IUniver${surfacePrefix}${featurePascal}UIConfig`,
-    workerChannelConstant: `${ensureKebabCase(input.pluginSlug).replace(/-/g, '_').toUpperCase()}_WORKER_CHANNEL`,
+    workerChannelConstant: `${ensureKebabCase(input.pluginSlug).replace(/-/g, "_").toUpperCase()}_WORKER_CHANNEL`,
   };
 }
 
 function deriveBuildEntries(blueprint: ProjectBlueprint): BuildEntry[] {
   const entries: BuildEntry[] = [
-    { key: 'index', sourcePath: 'src/index.ts' },
-    { key: 'plugin', sourcePath: 'src/plugin.ts' },
+    { key: "index", sourcePath: "src/index.ts" },
+    { key: "plugin", sourcePath: "src/plugin.ts" },
   ];
 
   if (blueprint.includeUiPlugin) {
-    entries.push({ key: 'ui-plugin', sourcePath: 'src/ui-plugin.ts' });
+    entries.push({ key: "ui-plugin", sourcePath: "src/ui-plugin.ts" });
   }
   if (blueprint.includeMobileEntry) {
-    entries.push({ key: 'mobile-plugin', sourcePath: 'src/mobile-plugin.ts' });
+    entries.push({ key: "mobile-plugin", sourcePath: "src/mobile-plugin.ts" });
   }
   if (blueprint.includeWorkerEntry) {
-    entries.push({ key: 'worker/plugin', sourcePath: 'src/worker/plugin.ts' });
+    entries.push({ key: "worker/plugin", sourcePath: "src/worker/plugin.ts" });
   }
   if (blueprint.includeFacade) {
-    entries.push({ key: 'facade', sourcePath: 'src/facade/index.ts' });
+    entries.push({ key: "facade", sourcePath: "src/facade/index.ts" });
   }
   if (blueprint.includeLocale) {
-    entries.push({ key: 'locale/en-US', sourcePath: 'src/locale/en-US.ts' });
+    entries.push({ key: "locale/en-US", sourcePath: "src/locale/en-US.ts" });
   }
 
   return entries;
@@ -147,8 +147,8 @@ function deriveBuildEntries(blueprint: ProjectBlueprint): BuildEntry[] {
 
 function deriveDependencies(input: GenerationOptions, blueprint: ProjectBlueprint): ProjectDependencies {
   const runtime: Record<string, string> = {
-    '@univerjs/core': getSemverRange(input.univerVersion),
-    rxjs: '^7.8.2',
+    "@univerjs/core": getSemverRange(input.univerVersion),
+    rxjs: "^7.8.2",
   };
 
   if (blueprint.baseLogicDependencyImport) {
@@ -158,56 +158,59 @@ function deriveDependencies(input: GenerationOptions, blueprint: ProjectBlueprin
     runtime[blueprint.baseUiDependencyImport.packageName] = getSemverRange(input.univerVersion);
   }
   if (blueprint.includeWorkerEntry) {
-    runtime['@univerjs/rpc'] = getSemverRange(input.univerVersion);
+    runtime["@univerjs/rpc"] = getSemverRange(input.univerVersion);
   }
-  const peer: Record<string, string> = blueprint.includeUiPlugin || blueprint.includeMobileEntry
-    ? {
-      react: '^18.0.0 || ^19.0.0',
-      'react-dom': '^18.0.0 || ^19.0.0',
-    }
-    : {};
+  const peer: Record<string, string> =
+    blueprint.includeUiPlugin || blueprint.includeMobileEntry
+      ? {
+          react: "^18.0.0 || ^19.0.0",
+          "react-dom": "^18.0.0 || ^19.0.0",
+        }
+      : {};
 
   const dev: Record<string, string> = {
-    '@types/node': '^25.5.2',
-    oxlint: '^1.58.0',
-    tsdown: '^0.21.7',
-    tsx: '^4.21.0',
-    typescript: '^6.0.2',
-    vitest: '^4.1.2',
+    "@types/node": "^25.5.2",
+    oxfmt: "^0.44.0",
+    oxlint: "^1.59.0",
+    "simple-git-hooks": "^2.13.1",
+    tsdown: "^0.21.7",
+    tsx: "^4.21.0",
+    typescript: "^6.0.2",
+    vitest: "^4.1.2",
   };
 
   if (blueprint.includeDemo) {
-    dev['@univerjs/design'] = getSemverRange(input.univerVersion);
-    dev['@univerjs/engine-formula'] = getSemverRange(input.univerVersion);
-    dev['@univerjs/engine-render'] = getSemverRange(input.univerVersion);
-    dev['@univerjs/ui'] = getSemverRange(input.univerVersion);
-    dev.vite = '^8.0.4';
+    dev["@univerjs/design"] = getSemverRange(input.univerVersion);
+    dev["@univerjs/engine-formula"] = getSemverRange(input.univerVersion);
+    dev["@univerjs/engine-render"] = getSemverRange(input.univerVersion);
+    dev["@univerjs/ui"] = getSemverRange(input.univerVersion);
+    dev.vite = "^8.0.4";
 
-    if (input.surface === 'docs' && !runtime['@univerjs/docs-ui']) {
-      dev['@univerjs/docs-ui'] = getSemverRange(input.univerVersion);
+    if (input.surface === "docs" && !runtime["@univerjs/docs-ui"]) {
+      dev["@univerjs/docs-ui"] = getSemverRange(input.univerVersion);
     }
 
-    if (input.surface === 'sheets') {
-      dev['@univerjs/docs'] = getSemverRange(input.univerVersion);
-      dev['@univerjs/docs-ui'] = getSemverRange(input.univerVersion);
-      dev['@univerjs/sheets-formula'] = getSemverRange(input.univerVersion);
-      dev['@univerjs/sheets-formula-ui'] = getSemverRange(input.univerVersion);
-      dev['@univerjs/sheets-numfmt'] = getSemverRange(input.univerVersion);
-      dev['@univerjs/sheets-numfmt-ui'] = getSemverRange(input.univerVersion);
+    if (input.surface === "sheets") {
+      dev["@univerjs/docs"] = getSemverRange(input.univerVersion);
+      dev["@univerjs/docs-ui"] = getSemverRange(input.univerVersion);
+      dev["@univerjs/sheets-formula"] = getSemverRange(input.univerVersion);
+      dev["@univerjs/sheets-formula-ui"] = getSemverRange(input.univerVersion);
+      dev["@univerjs/sheets-numfmt"] = getSemverRange(input.univerVersion);
+      dev["@univerjs/sheets-numfmt-ui"] = getSemverRange(input.univerVersion);
     }
 
-    if (input.surface === 'slides') {
-      dev['@univerjs/docs'] = getSemverRange(input.univerVersion);
-      dev['@univerjs/docs-ui'] = getSemverRange(input.univerVersion);
-      dev['@univerjs/drawing'] = getSemverRange(input.univerVersion);
-      if (!runtime['@univerjs/slides-ui']) {
-        dev['@univerjs/slides-ui'] = getSemverRange(input.univerVersion);
+    if (input.surface === "slides") {
+      dev["@univerjs/docs"] = getSemverRange(input.univerVersion);
+      dev["@univerjs/docs-ui"] = getSemverRange(input.univerVersion);
+      dev["@univerjs/drawing"] = getSemverRange(input.univerVersion);
+      if (!runtime["@univerjs/slides-ui"]) {
+        dev["@univerjs/slides-ui"] = getSemverRange(input.univerVersion);
       }
     }
   }
   if (blueprint.includeUiPlugin || blueprint.includeMobileEntry) {
-    dev.react = '^19.2.4';
-    dev['react-dom'] = '^19.2.4';
+    dev.react = "^19.2.4";
+    dev["react-dom"] = "^19.2.4";
   }
 
   for (const packageName of Object.keys(runtime)) {
@@ -219,33 +222,36 @@ function deriveDependencies(input: GenerationOptions, blueprint: ProjectBlueprin
 
 function deriveScripts(blueprint: ProjectBlueprint): ProjectScripts {
   return {
-    build: 'pnpm run build:bundle && pnpm run build:types',
-    buildBundle: 'node --import tsx/esm ./scripts/build.ts build --cleanup',
-    buildTypes: 'tsc -p tsconfig.node.json',
-    buildDemo: blueprint.includeDemo ? 'vite build --config vite.demo.config.ts' : undefined,
-    coverage: 'vitest run --coverage',
-    devDemo: blueprint.includeDemo ? 'vite --config vite.demo.config.ts' : undefined,
-    lint: 'oxlint --config .oxlintrc.json .',
-    lintFix: 'oxlint --config .oxlintrc.json . --fix',
-    test: 'vitest run',
-    typecheck: 'tsc --noEmit',
+    build: "pnpm run build:bundle && pnpm run build:types",
+    buildBundle: "node --import tsx/esm ./scripts/build.ts build --cleanup",
+    buildTypes: "tsc -p tsconfig.node.json",
+    buildDemo: blueprint.includeDemo ? "vite build --config vite.demo.config.ts" : undefined,
+    coverage: "vitest run --coverage",
+    devDemo: blueprint.includeDemo ? "vite --config vite.demo.config.ts" : undefined,
+    fmt: "oxfmt",
+    fmtCheck: "oxfmt --check",
+    lint: "oxlint",
+    lintFix: "oxlint --fix",
+    prepare: "simple-git-hooks",
+    test: "vitest run",
+    typecheck: "tsc --noEmit",
   };
 }
 
 function createPublishTarget(key: string): PublishExportTarget {
-  if (key === 'facade') {
+  if (key === "facade") {
     return {
-      import: './lib/es/facade.js',
-      require: './lib/cjs/facade.js',
-      types: './lib/types/facade/index.d.ts',
+      import: "./lib/es/facade.js",
+      require: "./lib/cjs/facade.js",
+      types: "./lib/types/facade/index.d.ts",
     };
   }
 
-  if (key === 'index') {
+  if (key === "index") {
     return {
-      import: './lib/es/index.js',
-      require: './lib/cjs/index.js',
-      types: './lib/types/index.d.ts',
+      import: "./lib/es/index.js",
+      require: "./lib/cjs/index.js",
+      types: "./lib/types/index.d.ts",
     };
   }
 
@@ -258,45 +264,45 @@ function createPublishTarget(key: string): PublishExportTarget {
 
 function deriveExports(blueprint: ProjectBlueprint): ProjectExports {
   const source: Record<string, string> = {
-    '.': './src/index.ts',
-    './*': './src/*',
+    ".": "./src/index.ts",
+    "./*": "./src/*",
   };
   const publish: Record<string, PublishExport> = {
-    '.': createPublishTarget('index'),
-    './*': {
-      import: './lib/es/*',
-      require: './lib/cjs/*',
-      types: './lib/types/index.d.ts',
+    ".": createPublishTarget("index"),
+    "./*": {
+      import: "./lib/es/*",
+      require: "./lib/cjs/*",
+      types: "./lib/types/index.d.ts",
     },
   };
 
   if (blueprint.includeFacade) {
-    source['./facade'] = './src/facade/index.ts';
-    publish['./facade'] = createPublishTarget('facade');
-    publish['./lib/facade'] = createPublishTarget('facade');
+    source["./facade"] = "./src/facade/index.ts";
+    publish["./facade"] = createPublishTarget("facade");
+    publish["./lib/facade"] = createPublishTarget("facade");
   }
   if (blueprint.includeLocale) {
-    source['./locale/*'] = './src/locale/*.ts';
-    publish['./locale/*'] = {
-      import: './lib/es/locale/*.js',
-      require: './lib/cjs/locale/*.js',
-      types: './lib/types/locale/*.d.ts',
+    source["./locale/*"] = "./src/locale/*.ts";
+    publish["./locale/*"] = {
+      import: "./lib/es/locale/*.js",
+      require: "./lib/cjs/locale/*.js",
+      types: "./lib/types/locale/*.d.ts",
     };
   }
   if (blueprint.includeMobileEntry) {
-    source['./mobile-plugin'] = './src/mobile-plugin.ts';
-    publish['./mobile-plugin'] = createPublishTarget('mobile-plugin');
+    source["./mobile-plugin"] = "./src/mobile-plugin.ts";
+    publish["./mobile-plugin"] = createPublishTarget("mobile-plugin");
   }
   if (blueprint.includeWorkerEntry) {
-    source['./worker/*'] = './src/worker/*.ts';
-    publish['./worker/*'] = {
-      import: './lib/es/worker/*.js',
-      require: './lib/cjs/worker/*.js',
-      types: './lib/types/worker/*.d.ts',
+    source["./worker/*"] = "./src/worker/*.ts";
+    publish["./worker/*"] = {
+      import: "./lib/es/worker/*.js",
+      require: "./lib/cjs/worker/*.js",
+      types: "./lib/types/worker/*.d.ts",
     };
   }
 
-  publish['./lib/*'] = './lib/*';
+  publish["./lib/*"] = "./lib/*";
 
   return { source, publish };
 }

@@ -1,10 +1,10 @@
-import { deriveProjectSpec } from '../domain/project-spec';
-import type { GeneratedFile, GenerationOptions, ProjectSpec } from '../domain/types';
-import { createPackageManifest } from './package-manifest';
-import { createRenderContext } from './render-context';
-import { renderTemplate } from './render-template';
-import { loadTemplate } from './template-loader';
-import { createTemplatePlan } from './template-plan';
+import { deriveProjectSpec } from "../domain/project-spec";
+import type { GeneratedFile, GenerationOptions, ProjectSpec } from "../domain/types";
+import { createPackageManifest } from "./package-manifest";
+import { createRenderContext } from "./render-context";
+import { renderTemplate } from "./render-template";
+import { loadTemplate } from "./template-loader";
+import { createTemplatePlan } from "./template-plan";
 
 export function renderProjectFiles(spec: ProjectSpec): GeneratedFile[] {
   const context = createRenderContext(spec);
@@ -16,7 +16,7 @@ export function renderProjectFiles(spec: ProjectSpec): GeneratedFile[] {
   return [
     ...files,
     {
-      path: 'package.json',
+      path: "package.json",
       content: createPackageManifest(spec),
     },
   ];

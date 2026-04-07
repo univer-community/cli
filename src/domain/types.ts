@@ -1,5 +1,5 @@
-export const SURFACES = ['sheets', 'docs', 'slides', 'universal'] as const;
-export const SHAPES = ['logic-only', 'logic-ui', 'mobile-ui-addon', 'worker-rpc-companion'] as const;
+export const SURFACES = ["sheets", "docs", "slides", "universal"] as const;
+export const SHAPES = ["logic-only", "logic-ui", "mobile-ui-addon", "worker-rpc-companion"] as const;
 
 export type Surface = (typeof SURFACES)[number];
 export type Shape = (typeof SHAPES)[number];
@@ -85,8 +85,11 @@ export interface ProjectScripts {
   buildDemo?: string;
   coverage: string;
   devDemo?: string;
+  fmt: string;
+  fmtCheck: string;
   lint: string;
   lintFix: string;
+  prepare: string;
   test: string;
   typecheck: string;
 }

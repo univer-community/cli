@@ -2,7 +2,7 @@ export function sortObject<T extends Record<string, unknown>>(value: T): T {
   return Object.fromEntries(
     Object.entries(value)
       .filter(([, current]) => current !== undefined)
-      .sort(([left], [right]) => left.localeCompare(right))
+      .sort(([left], [right]) => left.localeCompare(right)),
   ) as T;
 }
 

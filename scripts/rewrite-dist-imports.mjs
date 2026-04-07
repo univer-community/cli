@@ -1,15 +1,15 @@
-import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import { readFile, readdir, stat, writeFile } from "node:fs/promises";
+import path from "node:path";
 
-const DIST_DIR = path.resolve('dist');
-const TARGET_EXTENSIONS = new Set(['.js', '.d.ts']);
+const DIST_DIR = path.resolve("dist");
+const TARGET_EXTENSIONS = new Set([".js", ".d.ts"]);
 const IMPORT_EXPORT_REWRITES = [
   /^(\s*import\s+(?:type\s+)?(?:.+?\s+from\s+)?['"])(\.\.?\/[^'"]+)(['"])/gm,
   /^(\s*export\s+(?:type\s+)?(?:.+?\s+from\s+['"]))(\.\.?\/[^'"]+)(['"])/gm,
 ];
 
 function shouldRewrite(specifier) {
-  return path.extname(specifier) === '';
+  return path.extname(specifier) === "";
 }
 
 function rewriteRelativeSpecifiers(source) {
@@ -39,16 +39,16 @@ async function walk(directory) {
       continue;
     }
 
-    const extension = entry.name.endsWith('.d.ts') ? '.d.ts' : path.extname(entry.name);
+    const extension = entry.name.endsWith(".d.ts") ? ".d.ts" : path.extname(entry.name);
     if (!TARGET_EXTENSIONS.has(extension)) {
       continue;
     }
 
-    const source = await readFile(absolutePath, 'utf8');
+    const source = await readFile(absolutePath, "utf8");
     const rewritten = rewriteRelativeSpecifiers(source);
 
     if (rewritten !== source) {
-      await writeFile(absolutePath, rewritten, 'utf8');
+      await writeFile(absolutePath, rewritten, "utf8");
     }
   }
 }

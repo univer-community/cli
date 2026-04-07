@@ -23,6 +23,7 @@ Install and validate the scaffold itself:
 ```bash
 pnpm install
 pnpm lint
+pnpm fmt:check
 pnpm test
 pnpm typecheck
 pnpm build

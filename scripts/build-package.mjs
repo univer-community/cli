@@ -1,11 +1,11 @@
-import { spawnSync } from 'node:child_process';
-import { rmSync } from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
+import { spawnSync } from "node:child_process";
+import { rmSync } from "node:fs";
+import path from "node:path";
+import process from "node:process";
 
 function run(command, args) {
   const result = spawnSync(command, args, {
-    stdio: 'inherit',
+    stdio: "inherit",
   });
 
   if (result.error) {
@@ -17,7 +17,7 @@ function run(command, args) {
   }
 }
 
-rmSync(path.resolve('dist'), { force: true, recursive: true });
-run('pnpm', ['exec', 'tsc', '-p', 'tsconfig.build.json']);
-run('node', ['./scripts/rewrite-dist-imports.mjs']);
-run('node', ['./scripts/copy-runtime-assets.mjs']);
+rmSync(path.resolve("dist"), { force: true, recursive: true });
+run("pnpm", ["exec", "tsc", "-p", "tsconfig.build.json"]);
+run("node", ["./scripts/rewrite-dist-imports.mjs"]);
+run("node", ["./scripts/copy-runtime-assets.mjs"]);

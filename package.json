@@ -2,46 +2,50 @@
   "name": "@univer-community/create-cli",
   "version": "0.20.0",
   "private": false,
-  "type": "module",
-  "license": "MIT",
-  "author": "白熱 <sonne@asaki.me>",
   "description": "An interactive scaffold for generating standalone `Univer` plugin projects.",
   "keywords": [
-    "univer",
+    "cli",
+    "generator",
     "plugin",
     "scaffold",
-    "generator",
-    "cli"
+    "univer"
   ],
+  "homepage": "https://github.com/univer-community",
+  "license": "MIT",
+  "author": "白熱 <sonne@asaki.me>",
   "bin": {
     "create-cli": "./dist/cli.js"
   },
   "files": [
     "dist"
   ],
-  "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=10.0.0"
-  },
-  "packageManager": "pnpm@10.33.0",
+  "type": "module",
   "scripts": {
     "build": "node ./scripts/build-package.mjs",
     "dev": "tsx src/cli.ts",
-    "lint": "oxlint --config .oxlintrc.json .",
-    "lint:fix": "oxlint --config .oxlintrc.json . --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "prepare": "simple-git-hooks",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint"
-  },
   "devDependencies": {
     "@types/node": "^25.5.2",
-    "oxlint": "^1.58.0",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
     "simple-git-hooks": "^2.13.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2"
-  }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint:fix && pnpm fmt"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@10.33.0"
 }

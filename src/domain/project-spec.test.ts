@@ -1,48 +1,54 @@
-import { describe, expect, it } from 'vitest';
-import { ensureKebabCase, toConstantCase, toPascalCase } from './naming';
-import { deriveProjectBlueprint, deriveProjectNames, deriveProjectSpec } from './project-spec';
-import type { GenerationOptions } from './types';
+import { describe, expect, it } from "vitest";
+import { ensureKebabCase, toConstantCase, toPascalCase } from "./naming";
+import { deriveProjectBlueprint, deriveProjectNames, deriveProjectSpec } from "./project-spec";
+import type { GenerationOptions } from "./types";
 
 const baseOptions: GenerationOptions = {
-  targetDir: './tmp',
-  pluginSlug: 'smart-filter',
-  packageName: '@univerjs/univer-smart-filter-plugin',
-  univerVersion: '0.19.0',
-  projectVersion: '0.1.0',
-  surface: 'sheets',
-  shape: 'logic-ui',
+  targetDir: "./tmp",
+  pluginSlug: "smart-filter",
+  packageName: "@univerjs/univer-smart-filter-plugin",
+  univerVersion: "0.19.0",
+  projectVersion: "0.1.0",
+  surface: "sheets",
+  shape: "logic-ui",
   includeFacade: true,
   includeLocale: true,
   includeDemo: false,
 };
 
-describe('project spec', () => {
-  it('normalizes naming helpers', () => {
-    expect(ensureKebabCase('Smart Filter')).toBe('smart-filter');
-    expect(toPascalCase('smart-filter')).toBe('SmartFilter');
-    expect(toConstantCase('smart-filter')).toBe('SMART_FILTER');
+describe("project spec", () => {
+  it("normalizes naming helpers", () => {
+    expect(ensureKebabCase("Smart Filter")).toBe("smart-filter");
+    expect(toPascalCase("smart-filter")).toBe("SmartFilter");
+    expect(toConstantCase("smart-filter")).toBe("SMART_FILTER");
   });
 
-  it('derives the blueprint for a single-package ui plugin', () => {
+  it("derives the blueprint for a single-package ui plugin", () => {
     const blueprint = deriveProjectBlueprint(baseOptions);
 
-    expect(blueprint.packageName).toBe('@univerjs/univer-smart-filter-plugin');
-    expect(blueprint.packageDirectoryName).toBe('univer-smart-filter-plugin');
+    expect(blueprint.packageName).toBe("@univerjs/univer-smart-filter-plugin");
+    expect(blueprint.packageDirectoryName).toBe("univer-smart-filter-plugin");
     expect(blueprint.includeUiPlugin).toBe(true);
     expect(blueprint.includeMobileEntry).toBe(false);
   });
 
-  it('derives names, build entries, and dependency groups', () => {
+  it("derives names, build entries, and dependency groups", () => {
     const names = deriveProjectNames(baseOptions);
     const spec = deriveProjectSpec(baseOptions);
 
-    expect(names.logicPluginConstant).toBe('SHEETS_SMART_FILTER_PLUGIN');
-    expect(names.uiPluginConstant).toBe('SHEETS_SMART_FILTER_UI_PLUGIN');
-    expect(spec.buildEntries.map((entry) => entry.key)).toEqual(['index', 'plugin', 'ui-plugin', 'facade', 'locale/en-US']);
+    expect(names.logicPluginConstant).toBe("SHEETS_SMART_FILTER_PLUGIN");
+    expect(names.uiPluginConstant).toBe("SHEETS_SMART_FILTER_UI_PLUGIN");
+    expect(spec.buildEntries.map((entry) => entry.key)).toEqual([
+      "index",
+      "plugin",
+      "ui-plugin",
+      "facade",
+      "locale/en-US",
+    ]);
     expect(spec.dependencies.runtime).toMatchObject({
-      '@univerjs/core': '^0.19.0',
-      '@univerjs/sheets': '^0.19.0',
-      '@univerjs/sheets-ui': '^0.19.0',
+      "@univerjs/core": "^0.19.0",
+      "@univerjs/sheets": "^0.19.0",
+      "@univerjs/sheets-ui": "^0.19.0",
     });
   });
 });

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import process from 'node:process';
-import { runCli } from './cli-runner';
+import process from "node:process";
+import { runCli } from "./cli-runner";
 
 runCli().catch((error) => {
   const message = error instanceof Error ? error.message : String(error);

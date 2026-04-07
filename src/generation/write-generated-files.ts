@@ -1,18 +1,16 @@
-import { existsSync } from 'node:fs';
-import { mkdir, rm, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import type { GeneratedFile, WriteGeneratedFilesOptions } from '../domain/types';
+import { existsSync } from "node:fs";
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
+import type { GeneratedFile, WriteGeneratedFilesOptions } from "../domain/types";
 
 export function findExistingGeneratedFiles(targetDir: string, files: GeneratedFile[]): string[] {
-  return files
-    .map((file) => path.resolve(targetDir, file.path))
-    .filter((absolutePath) => existsSync(absolutePath));
+  return files.map((file) => path.resolve(targetDir, file.path)).filter((absolutePath) => existsSync(absolutePath));
 }
 
 export async function writeGeneratedFiles(
   targetDir: string,
   files: GeneratedFile[],
-  options: WriteGeneratedFilesOptions = {}
+  options: WriteGeneratedFilesOptions = {},
 ): Promise<void> {
   const existingFiles = findExistingGeneratedFiles(targetDir, files);
 
@@ -27,6 +25,6 @@ export async function writeGeneratedFiles(
   for (const file of files) {
     const absolutePath = path.resolve(targetDir, file.path);
     await mkdir(path.dirname(absolutePath), { recursive: true });
-    await writeFile(absolutePath, file.content, 'utf8');
+    await writeFile(absolutePath, file.content, "utf8");
   }
 }
