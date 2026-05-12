@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version bump type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - none
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm run --if-present test
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        if: github.event.inputs.version != 'none'
+        run: npm version ${{ github.event.inputs.version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create tag from current version
+        if: github.event.inputs.version == 'none'
+        run: |
+          version=$(node -p "require('./package.json').version")
+          git tag "v${version}"
+
+      - name: Build
+        run: pnpm build
+
+      - name: Push changes and tag
+        if: github.event.inputs.version != 'none'
+        run: git push --follow-tags
+
+      - name: Push tag
+        if: github.event.inputs.version == 'none'
+        run: |
+          version=$(node -p "require('./package.json').version")
+          git push origin "v${version}"
+
+      - name: Publish To npm
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
